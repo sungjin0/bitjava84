@@ -39,6 +39,7 @@ public class QuickSortTest {
 	public static void main(String[] args) {
 		
 		int[] arr = new int[] { 41, 11, 5, 10, 160, 120, 150, 120, 110 };
-		int[] arr2 = QuickSort.Sort(arr, 0, arr.length - 1);
+		int[] getsort = QuickSort.Sort(arr, 0, arr.length - 1);
+//		System.out.println(getsort.toString());
 	}
 }
