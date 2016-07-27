@@ -1,8 +1,8 @@
 package edu.bit.java.sungjin;
 
-class Sort {
+class QuickSort {
 
-	public int[] getSort(int[] arr, int pivot, int len) {
+	public static int[] getSort(int[] arr, int pivot, int len) {
 
 		int temp;
 		int right = len;
@@ -16,9 +16,7 @@ class Sort {
 			if (arr[left] < arr[right]) { 
 				right = right - 1;
 				continue;
-			}
-
-			else {
+			} else {
 				temp = arr[left]; 
 				arr[left] = arr[right]; 
 				arr[right] = temp; 
@@ -39,19 +37,12 @@ class Sort {
 	}
 }
 
-public class QuickSort {
+public class QuickSortTest {
 
 	public static void main(String[] args) {
 
-		// int[] arr = new int[]{20,40,10,50};
 		int[] arr = new int[] { 41, 11, 5, 10, 160, 120, 150, 120, 110 };
 
-		Sort sort = new Sort();
-		int[] arr2 = sort.getSort(arr, 0, arr.length - 1);
-
-//		System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@");
-		for (int i = 0; i < arr2.length; i++) {
-			System.out.println(arr2[i]);
-		}
+		int[] arr2 = QuickSort.getSort(arr, 0, arr.length - 1);
 	}
 }
