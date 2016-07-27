@@ -20,9 +20,7 @@ class QuickSort {
 				temp = arr[left]; 
 				arr[left] = arr[right]; 
 				arr[right] = temp; 
-
 				if (left == right) {
-
 					/*System.out.println("pivot!!" + left);
 					System.out.println("len!!" + right);*/
 					getSort(arr, pivot, (left - 1));
