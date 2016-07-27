@@ -34,7 +34,6 @@ class QuickSort {
 
 public class QuickSortTest {
 	public static void main(String[] args) {
-		ads
 		int[] arr = new int[] { 41, 11, 5, 10, 160, 120, 150, 120, 110 };
 		int[] sort = QuickSort.Sort(arr, 0, arr.length - 1);
 	}
