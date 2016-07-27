@@ -12,7 +12,6 @@ class QuickSort {
 			return arr;
 
 		for (int i = pivot; i <= len; i++) { 
-
 			if (arr[left] < arr[right]) { 
 				right = right - 1;
 				continue;
@@ -38,9 +37,8 @@ class QuickSort {
 public class QuickSortTest {
 
 	public static void main(String[] args) {
-
+		
 		int[] arr = new int[] { 41, 11, 5, 10, 160, 120, 150, 120, 110 };
-
 		int[] arr2 = QuickSort.getSort(arr, 0, arr.length - 1);
 	}
 }
