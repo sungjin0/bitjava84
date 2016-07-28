@@ -1,7 +1,5 @@
 package edu.bit.java.sungjin;
 
-//import java.util.Arrays;
-
 class FibonacciSequence {
 
 	public static int[] makeFibonacci(final int repeatnum) {
@@ -29,6 +27,5 @@ public class FibonacciTest {
 	public static void main(String[] args) {
 
 		int[] fibonacci = FibonacciSequence.makeFibonacci(10);
-		// System.out.println(Arrays.toString(fibonacci));
 	}
 }
