@@ -4,7 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
 import java.util.Scanner;
-
+1
 public class MultiChatClient {
 
 	private static final int SERVER_PORT = 8085;
