@@ -26,7 +26,6 @@ public class MultiChatServer {
 				Thread srt = new Thread(new ServerRecvThread(socket));
 				srt.start();
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -76,7 +75,7 @@ public class MultiChatServer {
 
 		public void sendToAll(String read_msg) throws Exception {
 
-			HashMap<String, String> clients = client_map;
+			HashMap<String, String> clients = this.client_map;
 			Iterator<String> keys = clients.keySet().iterator();
 
 			while (keys.hasNext()) {
