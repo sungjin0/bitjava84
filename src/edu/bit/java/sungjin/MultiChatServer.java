@@ -45,7 +45,6 @@ public class MultiChatServer {
 		private String name;
 		private String str_ip;
 		private int port;
-
 		private HashMap<String, String> client_map;
 
 		ServerRecvThread(Socket socket) throws Exception {
