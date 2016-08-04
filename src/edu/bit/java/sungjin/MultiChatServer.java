@@ -46,12 +46,13 @@ public class MultiChatServer {
 		private String str_ip;
 		private int port;
 
-		private HashMap<String, String> client_map = new HashMap<String, String>();
+		private HashMap<String, String> client_map;
 
 		ServerRecvThread(Socket socket) throws Exception {
 
 			din = new DataInputStream(socket.getInputStream());
 			dout = new DataOutputStream(socket.getOutputStream());
+			client_map = new HashMap<String, String>();
 			// InetAddress ip = socket.getInetAddress();
 			str_ip = socket.getInetAddress().toString().substring(1);
 			port = socket.getPort();
