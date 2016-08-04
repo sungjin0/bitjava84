@@ -11,7 +11,7 @@ import java.util.TreeMap;
 public class MultiChatServer {
 
 	private static final int SERVER_PORT = 8085;
-	public static int user_count = 0;
+	public static int user_count;
 	private ServerSocket server_socket;
 	private Socket socket;
 
