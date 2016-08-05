@@ -11,21 +11,22 @@ import java.util.TreeMap;
 public class MultiChatServer {
 
 	private static final int SERVER_PORT = 8085;
-	public static int user_count;
-	private ServerSocket server_socket;
+	private ServerSocket serverSocket;
 	private Socket socket;
+	public static int user_count = 0;
 
 	public void init() throws Exception {
 
-		server_socket = new ServerSocket(SERVER_PORT);
+		serverSocket = new ServerSocket(SERVER_PORT);
 		System.out.println("Server Start");
 		try {
 			while (true) {
-				socket = server_socket.accept();
+				socket = serverSocket.accept();
 				user_count++;
-				Thread srt = new Thread(new ServerRecvThread(socket));
-				srt.start();
+				Thread sr = new Thread(new ServerRecvThread(socket));
+				sr.start();
 			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -33,8 +34,8 @@ public class MultiChatServer {
 
 	public static void main(String[] args) throws Exception {
 
-		MultiChatServer multi_chat = new MultiChatServer();
-		multi_chat.init();
+		MultiChatServer multiChat = new MultiChatServer();
+		multiChat.init();
 	}
 
 	class ServerRecvThread extends Thread {
@@ -45,13 +46,12 @@ public class MultiChatServer {
 		private String name;
 		private String str_ip;
 		private int port;
-		private HashMap<String, String> client_map;
+		private HashMap<String, String> client_map = new HashMap<String, String>();
 
 		ServerRecvThread(Socket socket) throws Exception {
 
 			din = new DataInputStream(socket.getInputStream());
 			dout = new DataOutputStream(socket.getOutputStream());
-			client_map = new HashMap<String, String>();
 			// InetAddress ip = socket.getInetAddress();
 			str_ip = socket.getInetAddress().toString().substring(1);
 			port = socket.getPort();
@@ -76,28 +76,41 @@ public class MultiChatServer {
 		public void sendToAll(String read_msg) throws Exception {
 
 			HashMap<String, String> clients = this.client_map;
-			Iterator<String> keys = clients.keySet().iterator();
+			TreeMap<String, String> tree_clients = new TreeMap<>(clients);
+			Iterator<String> tree_keys = tree_clients.keySet().iterator();
 
-			while (keys.hasNext()) {
-				String key = keys.next();
-				// clients.get(key);//name
-				// this.dout.writeUTF("sendToAll : " + read_msg);
-				dout.writeUTF("sendToAll : " + read_msg);
+			while (tree_keys.hasNext()) {
+				String key = tree_keys.next();
+				// clients.get(key); //name
+				this.dout.writeUTF("모두에게 전달 : " + read_msg);
 			}
 		}
 
 		@Override
 		public void run() {
+
 			while (din != null) {
 				try {
+
 					client_map.put(str_ip, this.name);
 					showClients();
 					String read_msg = din.readUTF();
+
 					sendToAll(read_msg);
+
 				} catch (Exception e) {
-					e.printStackTrace();
+					try {
+						din.close();
+						dout.close();
+						socket.close();
+						e.printStackTrace();
+					} catch (Exception e1) {
+						System.out.println(this.str_ip + " : 연결 끊김");
+						return;
+					}
 				}
 			} // end while
 		}// end run
-	}// end ServerRecvThread
+	}
+
 }

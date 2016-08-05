@@ -54,14 +54,20 @@ public class MultiChatClient {
 		@Override
 		public void run() {
 
-			Scanner keyboard = new Scanner(System.in);
-
+			Scanner scanner = new Scanner(System.in);
+			String keyboard;
 			try {
 				if (dout != null) {
 					dout.writeUTF(name);
 				}
 				while (dout != null) {
-					dout.writeUTF("[" + this.name + "]" + keyboard.nextLine());
+
+					keyboard = scanner.nextLine();
+					if (keyboard.endsWith("exit")) {
+						dout.writeUTF(keyboard);
+						System.exit(0);
+					}
+					dout.writeUTF("[" + this.name + "]" + keyboard);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
