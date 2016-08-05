@@ -40,6 +40,7 @@ public class MultiChatClient {
 		private Socket socket;
 		private String name;
 		private DataOutputStream dout;
+		private Scanner scanner = new Scanner(System.in);
 
 		public ClientSender(Socket socket, String name) {
 			this.socket = socket;
@@ -54,7 +55,6 @@ public class MultiChatClient {
 		@Override
 		public void run() {
 
-			Scanner scanner = new Scanner(System.in);
 			String keyboard;
 			try {
 				if (dout != null) {
