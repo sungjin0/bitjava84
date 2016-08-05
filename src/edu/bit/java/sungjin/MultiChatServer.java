@@ -105,6 +105,7 @@ public class MultiChatServer {
 						socket.close();
 						e.printStackTrace();
 					} catch (Exception e1) {
+						user_count--;
 						System.out.println(this.str_ip + " : 연결 끊김");
 						return;
 					}
