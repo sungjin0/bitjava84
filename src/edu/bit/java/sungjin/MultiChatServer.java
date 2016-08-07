@@ -6,29 +6,34 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.TreeMap;
+import java.util.Set;
 
 public class MultiChatServer {
 
 	private static final int SERVER_PORT = 8085;
 	private ServerSocket serverSocket;
 	private Socket socket;
-	public static int user_count = 0;
+	public static int user_count;
+	private HashMap<String, Socket> client_map;
+
+	MultiChatServer() throws Exception {
+
+		client_map = new HashMap<String, Socket>();
+		serverSocket = new ServerSocket(SERVER_PORT);
+		System.out.println("Server Start");
+	}
 
 	public void init() throws Exception {
 
-		serverSocket = new ServerSocket(SERVER_PORT);
-		System.out.println("Server Start");
 		try {
 			while (true) {
 				socket = serverSocket.accept();
 				user_count++;
-				Thread sr = new Thread(new ServerRecvThread(socket));
-				sr.start();
+				Thread srt = new ServerRecvThread(socket);
+				srt.start();
 			}
-
 		} catch (Exception e) {
-			e.printStackTrace();
+			return;
 		}
 	}
 
@@ -41,48 +46,82 @@ public class MultiChatServer {
 	class ServerRecvThread extends Thread {
 
 		private DataInputStream din;
-		private DataOutputStream dout;
 		private Socket socket;
 		private String name;
-		private String str_ip;
-		private int port;
-		private HashMap<String, String> client_map = new HashMap<String, String>();
 
 		ServerRecvThread(Socket socket) throws Exception {
 
 			din = new DataInputStream(socket.getInputStream());
-			dout = new DataOutputStream(socket.getOutputStream());
-			// InetAddress ip = socket.getInetAddress();
-			str_ip = socket.getInetAddress().toString().substring(1);
-			port = socket.getPort();
-			name = din.readUTF();
-
+			// dout = null;
+			this.name = din.readUTF();
+			client_map.put(this.name, socket);
+			sendToAll(this.name);
 		}
 
-		public void showClients() throws Exception {
+	/*	for Server debug
+		public void showList(String parse_msg) throws Exception {
 
-			HashMap<String, String> clients = this.client_map;
-			TreeMap<String, String> tree_clients = new TreeMap<>(clients);
-
-			Iterator<String> tree_keys = tree_clients.keySet().iterator();
+			Iterator<String> keys = client_map.keySet().iterator();
 
 			System.out.println("=====current users list=====" + "the total number : " + MultiChatServer.user_count);
-			while (tree_keys.hasNext()) {
-				String key = tree_keys.next();
-				System.out.println("IP Address : " + key + " Name : " + clients.get(key));
+			while (keys.hasNext()) {
+				String key = keys.next();
+				System.out.println("Name : " + key + " socket info : "
+						+ client_map.get(key).getInetAddress().toString().substring(1));
+				 System.out.println("Server_Test parse_msg : " + parse_msg);
+			}
+		}*/
+
+		public void showList(String parse_msg) throws Exception {
+
+			Set<String> keys_data = client_map.keySet();
+			Iterator<String> key_iter = keys_data.iterator();
+
+			while (key_iter.hasNext()) {
+				String key = key_iter.next();
+				DataOutputStream data_out = new DataOutputStream(client_map.get(key).getOutputStream());
+				data_out.writeUTF("=====current users list=====" + "the total number : " + MultiChatServer.user_count);
+				data_out.writeUTF(keys_data.toString().substring(0));
 			}
 		}
 
-		public void sendToAll(String read_msg) throws Exception {
+		public void sendToOne(String fromName, String toName, String parse_msg) throws Exception {
 
-			HashMap<String, String> clients = this.client_map;
-			TreeMap<String, String> tree_clients = new TreeMap<>(clients);
-			Iterator<String> tree_keys = tree_clients.keySet().iterator();
+			DataOutputStream data_out = new DataOutputStream(client_map.get(toName).getOutputStream());
+			data_out.writeUTF("Message from [" + fromName + "] on OTO : " + parse_msg);
 
-			while (tree_keys.hasNext()) {
-				String key = tree_keys.next();
-				// clients.get(key); //name
-				this.dout.writeUTF("모두에게 전달 : " + read_msg);
+		}
+
+		public void sendToAll(String parse_msg) throws Exception {
+
+			Iterator<String> keys = client_map.keySet().iterator();
+
+			try {
+
+				while (keys.hasNext()) {
+					String key = keys.next();
+					DataOutputStream data_out = new DataOutputStream(client_map.get(key).getOutputStream());
+
+					if (parse_msg == name) {
+						if (parse_msg == key)
+							data_out.writeUTF("[*" + this.name + "]님이 입장하셨습니다.");
+						else
+							data_out.writeUTF("[" + this.name + "]님이 입장하셨습니다.");
+					} else if (parse_msg.endsWith("/exit") && (this.name != key)) {
+						data_out.writeUTF("[" + name + "]" + "님이 종료하셨습니다. ");
+					} else if (parse_msg.startsWith("/oto")) {
+						String[] split_msg = parse_msg.split(" ");
+						sendToOne(key, split_msg[1], split_msg[2]);
+						break;
+
+					} else if (this.name == key) {
+						data_out.writeUTF("[*" + this.name + "] send to [All] : " + parse_msg);
+					} else
+						data_out.writeUTF("received Message From [" + this.name + "] : " + parse_msg);
+				} // end while
+
+			} catch (Exception e) {
+				// TODO: handle exception
 			}
 		}
 
@@ -92,26 +131,23 @@ public class MultiChatServer {
 			while (din != null) {
 				try {
 
-					client_map.put(str_ip, this.name);
-					showClients();
 					String read_msg = din.readUTF();
-
-					sendToAll(read_msg);
+					String parse_msg = read_msg.substring(read_msg.indexOf("]") + 1);
+					showList(parse_msg);
+					sendToAll(parse_msg);
 
 				} catch (Exception e) {
 					try {
 						din.close();
-						dout.close();
 						socket.close();
 						e.printStackTrace();
 					} catch (Exception e1) {
 						user_count--;
-						System.out.println(this.str_ip + " : 연결 끊김");
+						client_map.remove(name);
 						return;
 					}
 				}
 			} // end while
 		}// end run
-	}
-
+	}// end ServerRecvThread
 }

@@ -9,30 +9,33 @@ public class MultiChatClient {
 
 	private static final int SERVER_PORT = 8085;
 	private static final String SERVER_IP = "localhost";
-
 	private static Socket socket;
+	private Thread sender;
+	private Thread receiver;
+
+	MultiChatClient(String args) throws Exception {
+
+		socket = new Socket(SERVER_IP, SERVER_PORT);
+		System.out.println("client connection");
+
+		sender = new ClientSender(socket, args);
+		receiver = new ClientReceiver(socket);
+	}
 
 	public static void main(String[] args) throws Exception {
 
 		if (args.length != 1) {
-			System.out.println("how to execute : java MultiChatClient username");
-			System.exit(0);
+			System.out.println("How to execute : java MultiChatClient username");
+			return;
+		} else {
+			MultiChatClient mcc = new MultiChatClient(args[0]);
+			try {
+				mcc.sender.start();
+				mcc.receiver.start();
+			} catch (Exception e) {
+				return;
+			}
 		}
-
-		try {
-			socket = new Socket(SERVER_IP, SERVER_PORT);
-			System.out.println("client connection");
-
-			Thread sender = new Thread(new ClientSender(socket, args[0]));
-			Thread receiver = new Thread(new ClientReceiver(socket));
-
-			sender.start();
-			receiver.start();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
 	}
 
 	static class ClientSender extends Thread {
@@ -63,14 +66,25 @@ public class MultiChatClient {
 				while (dout != null) {
 
 					keyboard = scanner.nextLine();
-					if (keyboard.endsWith("exit")) {
+					if (keyboard.endsWith("/exit")) {
 						dout.writeUTF(keyboard);
 						System.exit(0);
+						/*
+						 * Do not remove. this is that The Client Information Of
+						 * The Abnormal System Status alerts to The Server. The
+						 * alerted ServerThread performs Exception e1. Example)
+						 * user_count--; client_map.remove(name);
+						 * 
+						 * and therefore, here Don't use "return;" that The
+						 * normal status.
+						 */
 					}
 					dout.writeUTF("[" + this.name + "]" + keyboard);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				// e.printStackTrace();
+				System.out.println("ClientSender Info : Server Exit ");
+				return;
 			}
 		}
 	}
@@ -95,7 +109,9 @@ public class MultiChatClient {
 				try {
 					System.out.println(din.readUTF());
 				} catch (Exception e) {
-					e.printStackTrace();
+					// e.printStackTrace();
+					System.out.println("ClientReceiver Info : Server Exit ");
+					return;
 				}
 			}
 		}
