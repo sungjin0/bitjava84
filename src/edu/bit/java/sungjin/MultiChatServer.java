@@ -2,11 +2,16 @@ package edu.bit.java.sungjin;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.time.Clock;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
+
+import org.xml.sax.helpers.ParserAdapter;
 
 public class MultiChatServer {
 
@@ -46,6 +51,7 @@ public class MultiChatServer {
 	class ServerRecvThread extends Thread {
 
 		private DataInputStream din;
+		// private DataOutputStream dout;
 		private Socket socket;
 		private String name;
 
@@ -87,6 +93,7 @@ public class MultiChatServer {
 
 		public void sendToOne(String fromName, String toName, String parse_msg) throws Exception {
 
+			// System.out.println("check" + fromName + ":" + toName + ":" + parse_msg);
 			DataOutputStream data_out = new DataOutputStream(client_map.get(toName).getOutputStream());
 			data_out.writeUTF("Message from [" + fromName + "] on OTO : " + parse_msg);
 
@@ -111,9 +118,13 @@ public class MultiChatServer {
 						data_out.writeUTF("[" + name + "]" + "님이 종료하셨습니다. ");
 					} else if (parse_msg.startsWith("/oto")) {
 						String[] split_msg = parse_msg.split(" ");
-						sendToOne(key, split_msg[1], split_msg[2]);
-						break;
-
+						if (split_msg.length <= 2 && this.name == key) {
+							data_out.writeUTF("How to use One to One : /oto username message");
+							return;
+						} else {
+							sendToOne(key, split_msg[1], split_msg[2]);
+							return;
+						}
 					} else if (this.name == key) {
 						data_out.writeUTF("[*" + this.name + "] send to [All] : " + parse_msg);
 					} else
@@ -121,7 +132,7 @@ public class MultiChatServer {
 				} // end while
 
 			} catch (Exception e) {
-				// TODO: handle exception
+
 			}
 		}
 
@@ -139,6 +150,7 @@ public class MultiChatServer {
 				} catch (Exception e) {
 					try {
 						din.close();
+						// dout.close();
 						socket.close();
 						e.printStackTrace();
 					} catch (Exception e1) {
