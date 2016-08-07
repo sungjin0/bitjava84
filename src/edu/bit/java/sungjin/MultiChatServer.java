@@ -2,16 +2,11 @@ package edu.bit.java.sungjin;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.time.Clock;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
-
-import org.xml.sax.helpers.ParserAdapter;
 
 public class MultiChatServer {
 
