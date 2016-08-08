@@ -65,7 +65,7 @@ public class MultiChatClient {
 			try {
 				if (dout != null)
 					dout.writeUTF(name);
-				
+
 				while (dout != null) {
 					keyboard = scanner.nextLine();
 					if (keyboard.endsWith("/exit")) {
@@ -88,7 +88,7 @@ public class MultiChatClient {
 				System.out.println("ClientSender Info : Server Exit ");
 				return;
 			}
-		}//end run
+		}// end run
 	}
 
 	static class ClientReceiver extends Thread {
@@ -119,6 +119,6 @@ public class MultiChatClient {
 					return;
 				}
 			}
-		}//end run
+		}// end run
 	}
 }
