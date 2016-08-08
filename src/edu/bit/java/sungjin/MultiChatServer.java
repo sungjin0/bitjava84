@@ -11,10 +11,10 @@ import java.util.Set;
 public class MultiChatServer {
 
 	private static final int SERVER_PORT = 8085;
+	private HashMap<String, Socket> client_map;
 	private ServerSocket serverSocket;
 	private Socket socket;
 	public static int user_count;
-	private HashMap<String, Socket> client_map;
 
 	MultiChatServer() throws Exception {
 
@@ -99,11 +99,11 @@ public class MultiChatServer {
 			Iterator<String> keys = client_map.keySet().iterator();
 
 			try {
-
 				while (keys.hasNext()) {
+					
 					String key = keys.next();
 					DataOutputStream data_out = new DataOutputStream(client_map.get(key).getOutputStream());
-
+				
 					if (parse_msg == name) {
 						if (parse_msg == key)
 							data_out.writeUTF("[*" + this.name + "]님이 입장하셨습니다.");
@@ -125,7 +125,6 @@ public class MultiChatServer {
 					} else
 						data_out.writeUTF("received Message From [" + this.name + "] : " + parse_msg);
 				} // end while
-
 			} catch (Exception e) {
 
 			}
@@ -136,7 +135,6 @@ public class MultiChatServer {
 
 			while (din != null) {
 				try {
-
 					String read_msg = din.readUTF();
 					String parse_msg = read_msg.substring(read_msg.indexOf("]") + 1);
 					showList(parse_msg);

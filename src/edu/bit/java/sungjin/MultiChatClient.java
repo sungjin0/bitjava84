@@ -48,8 +48,9 @@ public class MultiChatClient {
 		ClientSender(Socket socket, String name) {
 
 			this.socket = socket;
+			this.name = name;
+
 			try {
-				this.name = name;
 				dout = new DataOutputStream(socket.getOutputStream());
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -64,6 +65,7 @@ public class MultiChatClient {
 			try {
 				if (dout != null)
 					dout.writeUTF(name);
+				
 				while (dout != null) {
 					keyboard = scanner.nextLine();
 					if (keyboard.endsWith("/exit")) {
@@ -86,7 +88,7 @@ public class MultiChatClient {
 				System.out.println("ClientSender Info : Server Exit ");
 				return;
 			}
-		}
+		}//end run
 	}
 
 	static class ClientReceiver extends Thread {
@@ -97,6 +99,7 @@ public class MultiChatClient {
 		ClientReceiver(Socket socket) {
 
 			this.socket = socket;
+
 			try {
 				din = new DataInputStream(socket.getInputStream());
 			} catch (Exception e) {
@@ -116,6 +119,6 @@ public class MultiChatClient {
 					return;
 				}
 			}
-		}
+		}//end run
 	}
 }
