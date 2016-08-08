@@ -45,7 +45,8 @@ public class MultiChatClient {
 		private DataOutputStream dout;
 		private Scanner scanner = new Scanner(System.in);
 
-		public ClientSender(Socket socket, String name) {
+		ClientSender(Socket socket, String name) {
+
 			this.socket = socket;
 			try {
 				this.name = name;
@@ -59,12 +60,11 @@ public class MultiChatClient {
 		public void run() {
 
 			String keyboard;
-			try {
-				if (dout != null) {
-					dout.writeUTF(name);
-				}
-				while (dout != null) {
 
+			try {
+				if (dout != null)
+					dout.writeUTF(name);
+				while (dout != null) {
 					keyboard = scanner.nextLine();
 					if (keyboard.endsWith("/exit")) {
 						dout.writeUTF(keyboard);
@@ -94,7 +94,8 @@ public class MultiChatClient {
 		private Socket socket;
 		private DataInputStream din;
 
-		public ClientReceiver(Socket socket) {
+		ClientReceiver(Socket socket) {
+
 			this.socket = socket;
 			try {
 				din = new DataInputStream(socket.getInputStream());
@@ -105,6 +106,7 @@ public class MultiChatClient {
 
 		@Override
 		public void run() {
+
 			while (din != null) {
 				try {
 					System.out.println(din.readUTF());
